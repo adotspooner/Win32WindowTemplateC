@@ -7,46 +7,28 @@
 
 // forward declaration of MainWndProc
 LRESULT MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-void OutputLastError() {
-	DWORD errorCode = GetLastError();
-	LPSTR errorMessage;
-	DWORD errorSize = FormatMessageA(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL,
-		errorCode,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
-		(LPSTR)&errorMessage,
-		0,
-		NULL
-	);
-	char formattedMessageBuffer[1024];
-	int bytesWritten = sprintf_s(formattedMessageBuffer, sizeof(formattedMessageBuffer), "Error %d (0x%X): %s", errorCode, errorCode, errorMessage);
-	// print error message to dbg output
-	OutputDebugStringA(formattedMessageBuffer);
-	// free the error message buffer
-	LocalFree(errorMessage);
-}
+// forward declaration of OutputLastError
+void OutputLastError();
 
 int WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow) {
 
 	// define window class for main window
-	WNDCLASSEXA wndClass = { 0 };
-	wndClass.cbSize = sizeof(WNDCLASSEXA);
+	WNDCLASSEX wndClass = { 0 };
+	wndClass.cbSize = sizeof(WNDCLASSEX);
 	wndClass.style = CS_HREDRAW | CS_VREDRAW;
 	wndClass.lpfnWndProc = MainWndProc;
 	wndClass.cbClsExtra = 0;
 	wndClass.cbWndExtra = 0;
 	wndClass.hInstance = hInstance;
 	wndClass.hIcon = NULL;
-	wndClass.hCursor = LoadCursorA(NULL, (LPCSTR)IDC_ARROW);
+	wndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wndClass.hbrBackground = NULL;
 	wndClass.lpszMenuName = NULL;
-	wndClass.lpszClassName = "MainWindowClass";
+	wndClass.lpszClassName = TEXT("MainWindowClass");
 	wndClass.hIconSm = NULL;
 
 	// register window class
-	ATOM wndClassAtom = RegisterClassExA(&wndClass);
+	ATOM wndClassAtom = RegisterClassEx(&wndClass);
 
 	// check if window class registration failed
 	if (wndClassAtom == NULL) {
@@ -54,10 +36,10 @@ int WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPS
 		return 1;
 	}
 
-	HWND hWnd = CreateWindowExA(
+	HWND hWnd = CreateWindowEx(
 		NULL,
-		"MainWindowClass",
-		"Win32 - Window Template - C",
+		TEXT("MainWindowClass"),
+		TEXT("Win32 - Window Template - C"),
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
@@ -117,7 +99,7 @@ int WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPS
 		mInfo.cbSize = sizeof(MONITORINFO);
 
 		// get monitor info
-		BOOL miStatus = GetMonitorInfoA(hMonitor, &mInfo);
+		BOOL miStatus = GetMonitorInfo(hMonitor, &mInfo);
 
 		if (miStatus != FALSE) {
 			windowCenterPositionX = (mInfo.rcWork.left + mInfo.rcWork.right) / 2 - windowAdjustedWidth / 2;
@@ -148,14 +130,14 @@ int WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPS
 	// store return value of GetMessageA here
 	BOOL bRet;
 	// blocking message pump
-	while ((bRet = GetMessageA(&msg, hWnd, 0, 0)) != FALSE) {
+	while ((bRet = GetMessage(&msg, hWnd, 0, 0)) != FALSE) {
 		// if GetMessageA returns error bRet is set to -1
 		if (bRet == -1) {
 			OutputLastError();
 			return 1;
 		}
 		TranslateMessage(&msg);
-		DispatchMessageA(&msg);
+		DispatchMessage(&msg);
 	}
 
 	return 0;
@@ -187,7 +169,7 @@ LRESULT MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		GetClientRect(hWnd, &cr);
 		FillRect(hdc, &cr, brush);
 
-		TextOutA(hdc, 32, 32, "Hello, World!", 13);
+		TextOut(hdc, 32, 32, TEXT("Hello, World!"), 13);
 
 		// return value always nonzero
 		EndPaint(hWnd, &ps);
@@ -202,6 +184,6 @@ LRESULT MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		return 0;
 	}
 	}
-	return DefWindowProcA(hWnd, msg, wParam, lParam);
+	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
