@@ -23,10 +23,10 @@ void OutputLastError() {
 
 #ifdef UNICODE
 	wchar_t formattedMessageBuffer[1024];
-	int bytesWritten = swprintf_s(formattedMessageBuffer, sizeof(formattedMessageBuffer), L"Error %d (0x%X): %s", errorCode, errorCode, errorMessage);
+	int bytesWritten = swprintf_s(formattedMessageBuffer, 1024, L"Error %d (0x%X): %s", errorCode, errorCode, errorMessage);
 #else
 	char formattedMessageBuffer[1024];
-	int bytesWritten = sprintf_s(formattedMessageBuffer, sizeof(formattedMessageBuffer), "Error %d (0x%X): %s", errorCode, errorCode, errorMessage);
+	int bytesWritten = sprintf_s(formattedMessageBuffer, 1024, "Error %d (0x%X): %s", errorCode, errorCode, errorMessage);
 #endif // !UNICODE
 
 	// print error message to dbg output
