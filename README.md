@@ -1,4 +1,4 @@
-# Win32 Window Template C17
+# Win32 Window Template C (x64, C17)
 
 * created with Visual Studio 2022 Community
 * configured for x64
